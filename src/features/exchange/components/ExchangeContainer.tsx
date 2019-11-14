@@ -46,7 +46,7 @@ const ExchangeContainer = () => {
   };
 
   const handleValueChange = (i: number) => e => {
-    const val = removeSign(e.target.value);
+    const val = removeSign(e.target.value).replace(',', '.');
 
     if (val === '') {
       dispatch(updateExchange({ value: ['', ''] }));
