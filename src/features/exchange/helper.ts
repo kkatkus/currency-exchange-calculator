@@ -1,5 +1,5 @@
 export const validateValueFormat = (val: string) => {
-  return /^\d*\.?\d{0,2}$/.test(val);
+  return /^\d{0,16}\.?\d{0,2}$/.test(val);
 };
 
 export const validateMinValue = (val: [string, string]) => {

@@ -11,15 +11,17 @@ import { getState, saveState } from './utils/state';
 import RootState from './RootState';
 
 import './index.css';
+import PreloadedState from './PreloadedState';
 
-const initialState = {
+const initialState: PreloadedState = {
   ...getState(),
 };
 const store = configureStore(initialState);
 
 store.subscribe(() => {
   const state = store.getState() as RootState;
-  saveState({
+
+  const preloadedState: PreloadedState = {
     exchange: {
       loading: true,
       activeIndex: 0,
@@ -31,7 +33,9 @@ store.subscribe(() => {
     settings: {
       theme: state.settings.theme,
     },
-  });
+  };
+
+  saveState(preloadedState);
 });
 
 ReactDOM.render(

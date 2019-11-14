@@ -40,7 +40,8 @@ const ExchangeContainer = () => {
     const rate = rates[currency[i]][currency[oi]];
     const val = parseFloat(value[i]);
 
-    value[oi] = (Math.round(rate * val * 100) / 100).toFixed(2);
+    // no free food
+    value[oi] = (Math.floor(rate * val * 100) / 100).toFixed(2);
     dispatch(updateExchange({ value, activeIndex: i }));
   };
 
