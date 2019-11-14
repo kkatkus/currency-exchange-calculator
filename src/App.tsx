@@ -11,18 +11,14 @@ import { Global } from '@emotion/core';
 
 import normalize from './shared/styles/normalize';
 import root from './shared/styles/root';
-import Loader from './shared/components/Loader';
 
 const App = () => {
-  const [theme, loading] = useSelector((state: RootState) => [state.settings.theme, state.settings.loading]);
-
+  const [theme] = useSelector((state: RootState) => [state.settings.theme]);
   return (
     <ThemeProvider theme={themes[theme]}>
       <Global styles={[normalize, root]} />
       <Layout>
-        <Loader loading={loading}>
-          <AppRoutes />
-        </Loader>
+        <AppRoutes />
       </Layout>
     </ThemeProvider>
   );

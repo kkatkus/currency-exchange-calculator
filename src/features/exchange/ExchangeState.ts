@@ -1,5 +1,5 @@
 export default interface ExchangeState {
-  loading?: boolean;
+  loading: boolean;
   error?: string;
   balances: any;
   rates?: {

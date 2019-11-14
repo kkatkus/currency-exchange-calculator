@@ -6,16 +6,21 @@ import RootState from '../../../RootState';
 import { updateExchange, getExchangeRate } from '../exchange.actions';
 import useInterval from '../../../shared/hooks/useInterval';
 import { validateValueFormat, removeSign } from '../helper';
+import Loader from '../../../shared/components/Loader';
 
 const ExchangeContainer = () => {
-  const [error, loading, balances = {}, rates = {}, currency, value] = useSelector((state: RootState) => [
-    state.exchange.error,
-    state.exchange.loading,
-    state.exchange.balances,
-    state.exchange.rates,
-    state.exchange.currency,
-    state.exchange.value,
-  ]);
+  const [error = 'error occured', loading, balances = {}, rates = {}, currency, value] = useSelector(
+    (state: RootState) => [
+      state.exchange.error,
+      state.exchange.loading,
+      state.exchange.balances,
+      state.exchange.rates,
+      state.exchange.currency,
+      state.exchange.value,
+    ],
+  );
+
+  console.log(error, loading, balances, rates, currency, value);
 
   const dispatch = useDispatch();
 
@@ -85,18 +90,20 @@ const ExchangeContainer = () => {
   const handleExchange = (e: Event) => {};
 
   return (
-    <Exchange
-      balances={balances}
-      rates={rates}
-      currency={currency}
-      value={value}
-      loading={loading}
-      handleExchange={handleExchange}
-      handleValueChange={handleValueChange}
-      handleCurrencyChange={handleCurrencyChange}
-      handleCurrencySwitch={handleCurrencySwitch}
-      error={error}
-    />
+    <Loader loading={loading}>
+      <Exchange
+        balances={balances}
+        rates={rates}
+        currency={currency}
+        value={value}
+        loading={loading}
+        error={error}
+        handleExchange={handleExchange}
+        handleValueChange={handleValueChange}
+        handleCurrencyChange={handleCurrencyChange}
+        handleCurrencySwitch={handleCurrencySwitch}
+      />
+    </Loader>
   );
 };
 

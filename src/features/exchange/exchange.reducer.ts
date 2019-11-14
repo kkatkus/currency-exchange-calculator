@@ -5,12 +5,20 @@ import {
   EXCHANGE_UPDATE,
 } from '../../actions';
 
-const exchangeReducer = (state = {}, action) => {
+const defaultState = {
+  loading: true,
+  rates: {},
+  balances: { EUR: 50, GBP: 0, USD: 5 },
+  currency: ['EUR', 'GBP'],
+  value: ['', ''],
+};
+
+const exchangeReducer = (state = defaultState, action) => {
   switch (action.type) {
     case EXCHANGE_UPDATE:
       return { ...state, ...action.payload };
     case EXCHANGE_RATE_FETCH_INIT:
-      return { ...state, loading: true, error: null };
+      return { ...state, error: null };
     case EXCHANGE_RATE_FETCH_SUCCESS:
       return { ...state, rates: action.payload, loading: false };
     case EXCHANGE_RATE_FETCH_FAIL:

@@ -31,10 +31,6 @@ const StyledSelect = styled('select')`
   outline: 0;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   background: ${(props: any) => props.theme.colors.inputBg};
-  &:hover {
-  }
-  &:focus {
-  }
 `;
 
 const Svg = styled('svg')`

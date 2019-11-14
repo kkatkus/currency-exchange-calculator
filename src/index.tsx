@@ -12,15 +12,18 @@ import RootState from './RootState';
 
 import './index.css';
 
-const initialState = getState();
+const initialState = {
+  ...getState(),
+};
 const store = configureStore(initialState);
 
 store.subscribe(() => {
   const state = store.getState() as RootState;
   saveState({
     exchange: {
+      loading: true,
       rates: state.exchange.rates,
-      balances: state.exchange.balances || { EUR: 50, GBP: 0, USD: 5 },
+      balances: state.exchange.balances,
       currency: ['EUR', 'GBP'],
       value: ['', ''],
     },
