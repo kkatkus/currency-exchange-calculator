@@ -87,7 +87,13 @@ const ExchangeContainer = () => {
     syncValue(0, newCurrency, value);
   };
 
-  const handleExchange = (e: Event) => {};
+  const handleExchange = (e: Event) => {
+    e.preventDefault();
+    const newBalances = { ...balances };
+    newBalances[currency[0]] = newBalances[currency[0]] - parseFloat(value[0]);
+    newBalances[currency[1]] = newBalances[currency[1]] + parseFloat(value[1]);
+    dispatch(updateExchange({ balances: newBalances, value: ['', ''] }));
+  };
 
   return (
     <Loader loading={loading}>

@@ -22,7 +22,7 @@ const Error = styled('div')`
 
 const ExchangeBalance = ({ balance, symbol, value, canBalanceExceed }: Props) => {
   const isBalanceNegative = balance < parseFloat(value);
-  const message = `Balance: ${symbol}${balance}`;
+  const message = `Balance: ${symbol}${balance.toFixed(2)}`;
   return <Wrapper>{canBalanceExceed && isBalanceNegative ? <Error>{message}</Error> : message}</Wrapper>;
 };
 
