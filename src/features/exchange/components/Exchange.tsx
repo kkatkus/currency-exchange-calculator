@@ -57,6 +57,7 @@ const SwitchCurrencies = styled('div')`
   border: 2px solid ${(props: any) => lighten(0.3, props.theme.colors.input)};
   background-color: ${(props: any) => lighten(0.4, props.theme.colors.background)};
   border-radius: 50%;
+  cursor: pointer;
 `;
 
 const DarkenBlock = styled('div')`

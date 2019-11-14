@@ -22,6 +22,7 @@ store.subscribe(() => {
   saveState({
     exchange: {
       loading: true,
+      activeIndex: 0,
       rates: state.exchange.rates,
       balances: state.exchange.balances,
       currency: ['EUR', 'GBP'],

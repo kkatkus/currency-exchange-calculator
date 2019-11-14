@@ -9,18 +9,17 @@ import { validateValueFormat, removeSign } from '../helper';
 import Loader from '../../../shared/components/Loader';
 
 const ExchangeContainer = () => {
-  const [error = 'error occured', loading, balances = {}, rates = {}, currency, value] = useSelector(
+  const [error = '', loading, activeIndex, balances = {}, rates = {}, currency, value] = useSelector(
     (state: RootState) => [
       state.exchange.error,
       state.exchange.loading,
+      state.exchange.activeIndex,
       state.exchange.balances,
       state.exchange.rates,
       state.exchange.currency,
       state.exchange.value,
     ],
   );
-
-  console.log(error, loading, balances, rates, currency, value);
 
   const dispatch = useDispatch();
 
@@ -42,7 +41,7 @@ const ExchangeContainer = () => {
     const val = parseFloat(value[i]);
 
     value[oi] = (Math.round(rate * val * 100) / 100).toFixed(2);
-    dispatch(updateExchange({ value }));
+    dispatch(updateExchange({ value, activeIndex: i }));
   };
 
   const handleValueChange = (i: number) => e => {
@@ -83,8 +82,9 @@ const ExchangeContainer = () => {
 
   const handleCurrencySwitch = () => {
     const newCurrency = [currency[1], currency[0]] as [string, string];
-    dispatch(updateExchange({ currency: newCurrency }));
-    syncValue(0, newCurrency, value);
+    const newValue = [value[1], value[0]] as [string, string];
+    dispatch(updateExchange({ currency: newCurrency, value: newValue }));
+    syncValue(activeIndex, newCurrency, newValue);
   };
 
   const handleExchange = (e: Event) => {

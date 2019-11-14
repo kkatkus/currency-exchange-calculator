@@ -7,6 +7,7 @@ import {
 
 const defaultState = {
   loading: true,
+  activeIndex: 0,
   rates: {},
   balances: { EUR: 50, GBP: 0, USD: 5 },
   currency: ['EUR', 'GBP'],

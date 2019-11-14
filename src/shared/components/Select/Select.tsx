@@ -40,6 +40,7 @@ const Svg = styled('svg')`
   width: 20px;
   height: 20px;
   transform: rotate(-90deg);
+  pointer-events: none;
 `;
 
 const Select = ({ style, name, value, options = [], onChange }: Props) => (

@@ -1,6 +1,7 @@
 export default interface ExchangeState {
   loading: boolean;
   error?: string;
+  activeIndex: number;
   balances: any;
   rates?: {
     [name: string]: {
