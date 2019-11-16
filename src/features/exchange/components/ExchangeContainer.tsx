@@ -44,7 +44,8 @@ const ExchangeContainer = () => {
     const val = parseFloat(value[i]);
 
     // no free food
-    value[oi] = (Math.floor(rate * val * 100) / 100).toFixed(2);
+    const operation = i === 1 ? 'ceil' : 'floor';
+    value[oi] = (Math[operation](rate * val * 100) / 100).toFixed(2);
     dispatch(updateExchange({ value, activeIndex: i }));
   };
 
