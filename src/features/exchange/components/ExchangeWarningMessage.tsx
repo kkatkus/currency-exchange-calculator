@@ -1,10 +1,15 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import { getExchangeFee } from '../helper';
+import ExchangeRates from '../ExchangeRates';
 
 interface Props {
+  rates: ExchangeRates;
+  currency: string;
   balance: number;
   symbol: string;
   value: string;
+  freeLimit: number;
   canBalanceExceed?: boolean;
 }
 
@@ -20,18 +25,27 @@ const Error = styled('div')`
   color: ${(props: any) => props.theme.colors.error};
 `;
 
-const ExchangeWarningMessage = ({ balance, symbol, value, canBalanceExceed }: Props) => {
-  if (!canBalanceExceed) {
-    return null;
-  }
+const ExchangeWarningMessage = ({ rates, freeLimit, currency, balance, symbol, value, canBalanceExceed }: Props) => {
   let Message;
 
-  if (balance < parseFloat(value)) {
-    Message = <span>exceeds balance</span>;
-  }
+  if (!canBalanceExceed) {
+    const exchangeFee = getExchangeFee(rates, currency, value, freeLimit);
+    if (exchangeFee > 0) {
+      Message = (
+        <span>
+          Fee: {symbol}
+          {exchangeFee}
+        </span>
+      );
+    }
+  } else {
+    if (balance < parseFloat(value)) {
+      Message = <span>exceeds balance</span>;
+    }
 
-  if (parseFloat(value) < 0.1) {
-    Message = <Error>Minimum amount is {symbol}0.10</Error>;
+    if (parseFloat(value) < 0.1) {
+      Message = <Error>Minimum amount is {symbol}0.10</Error>;
+    }
   }
 
   if (Message) {

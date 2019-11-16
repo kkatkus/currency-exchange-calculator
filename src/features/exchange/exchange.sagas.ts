@@ -1,26 +1,24 @@
 import { put, takeLatest } from 'redux-saga/effects';
-
 import axios from 'axios';
 
 import { EXCHANGE_RATE_FETCH_INIT, EXCHANGE_RATE_FETCH_SUCCESS, EXCHANGE_RATE_FETCH_FAIL } from '../../actions';
-import { EXCHANGE_RATE_API_ID } from '../../constants';
+import ExchangeRates from './ExchangeRates';
 
-function* getExchangeRate({ type, payload }) {
+function* getExchangeRate() {
   try {
-    const response = yield axios.get(`https://openexchangerates.org/api/latest.json?app_id=${EXCHANGE_RATE_API_ID}`);
-
-    const rates = {
+    const response = yield axios.get(`https://api.exchangeratesapi.io/latest?base=EUR`);
+    const rates: ExchangeRates = {
       EUR: {
-        GBP: Math.round((response.data.rates.GBP / response.data.rates.EUR) * 1000000) / 1000000,
-        USD: Math.round((1 / response.data.rates.EUR) * 1000000) / 1000000,
+        USD: response.data.rates.USD,
+        GBP: response.data.rates.GBP,
       },
       GBP: {
-        EUR: Math.round((response.data.rates.EUR / response.data.rates.GBP) * 1000000) / 1000000,
-        USD: Math.round((1 / response.data.rates.GBP) * 1000000) / 1000000,
+        EUR: Math.round((1 / response.data.rates.GBP) * 1000000) / 1000000,
+        USD: Math.round((response.data.rates.USD / response.data.rates.GBP) * 1000000) / 1000000,
       },
       USD: {
-        EUR: response.data.rates.EUR,
-        GBP: response.data.rates.GBP,
+        EUR: Math.round((1 / response.data.rates.USD) * 1000000) / 1000000,
+        GBP: Math.round((response.data.rates.GBP / response.data.rates.USD) * 1000000) / 1000000,
       },
     };
     yield put({ type: EXCHANGE_RATE_FETCH_SUCCESS, payload: rates });
@@ -28,7 +26,7 @@ function* getExchangeRate({ type, payload }) {
     const payload =
       e.response && e.response.data && e.response.data.message
         ? e.response.data.message
-        : e.message || 'Failed to login';
+        : e.message || 'Failed to fetch rates';
     yield put({ type: EXCHANGE_RATE_FETCH_FAIL, payload });
   }
 }

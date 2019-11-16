@@ -10,8 +10,10 @@ import * as serviceWorker from './serviceWorker';
 import { getState, saveState } from './utils/state';
 import RootState from './RootState';
 
-import './index.css';
 import PreloadedState from './PreloadedState';
+
+import './assets/css/normalize.css';
+import './index.css';
 
 const initialState: PreloadedState = {
   ...getState(),
@@ -25,6 +27,7 @@ store.subscribe(() => {
     exchange: {
       loading: true,
       activeIndex: 0,
+      freeLimit: state.exchange.freeLimit,
       rates: state.exchange.rates,
       balances: state.exchange.balances,
       currency: ['EUR', 'GBP'],

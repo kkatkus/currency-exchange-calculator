@@ -16,13 +16,13 @@ const Wrapper = styled('div')`
   color: ${(props: any) => props.theme.colors.input};
 `;
 
-const Error = styled('div')`
+const Error = styled('span')`
   color: ${(props: any) => props.theme.colors.error};
 `;
 
-const ExchangeBalance = ({ balance, symbol, value, canBalanceExceed }: Props) => {
+const ExchangeBalance = ({ balance, symbol = '', value, canBalanceExceed }: Props) => {
   const isBalanceNegative = balance < parseFloat(value);
-  const message = `Balance: ${symbol}${balance.toFixed(2)}`;
+  const message = `Balance: ${symbol}${(balance || 0).toFixed(2)}`;
   return <Wrapper>{canBalanceExceed && isBalanceNegative ? <Error>{message}</Error> : message}</Wrapper>;
 };
 

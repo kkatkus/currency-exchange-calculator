@@ -5,10 +5,13 @@ import Select from '../../../shared/components/Select';
 import Input from '../../../shared/components/Input';
 import ExchangeBalance from './ExchangeBalance';
 import ExchangeWarningMessage from './ExchangeWarningMessage';
-import { addSign } from '../helper';
+import { addSign, getCurrencySymbol } from '../helper';
+import { CURRENCIES } from '../../../constants';
+import ExchangeRates from '../ExchangeRates';
 
 interface Props {
-  currencies: any;
+  rates: ExchangeRates;
+  freeLimit: number;
   balance: number;
   currency: string;
   value: string;
@@ -26,7 +29,8 @@ const Row = styled('div')`
 `;
 
 const ExchangeInputBlock = ({
-  currencies = [],
+  rates,
+  freeLimit,
   balance,
   currency,
   value,
@@ -34,12 +38,12 @@ const ExchangeInputBlock = ({
   handleValueChange,
   handleCurrencyChange,
 }: Props) => {
-  const symbol = (currencies.find(f => f.value === currency) || {}).symbol;
+  const symbol = getCurrencySymbol(currency);
   return (
     <Row>
       <Select
         style={{ width: 74, position: 'absolute' }}
-        options={currencies}
+        options={CURRENCIES}
         name="from"
         value={currency}
         onChange={handleCurrencyChange}
@@ -47,12 +51,20 @@ const ExchangeInputBlock = ({
       <Input
         style={{ paddingLeft: 84, textAlign: 'right' }}
         placeholder="0"
-        name="amont"
+        name="amount"
         value={addSign(value, canBalanceExceed)}
         onChange={handleValueChange}
       />
       <ExchangeBalance balance={balance} symbol={symbol} value={value} canBalanceExceed={canBalanceExceed} />
-      <ExchangeWarningMessage balance={balance} symbol={symbol} value={value} canBalanceExceed={canBalanceExceed} />
+      <ExchangeWarningMessage
+        rates={rates}
+        currency={currency}
+        balance={balance}
+        symbol={symbol}
+        value={value}
+        freeLimit={freeLimit}
+        canBalanceExceed={canBalanceExceed}
+      />
     </Row>
   );
 };

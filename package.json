@@ -5,7 +5,7 @@
 	"scripts": {
 		"start": "react-scripts start",
 		"build": "react-scripts build",
-		"test": "react-scripts test",
+		"test": "react-scripts test --env=jsdom",
 		"eject": "react-scripts eject",
 		"lint": "eslint '*/**/*.{ts,tsx}'",
 		"lint:fix": "eslint '*/**/*.{ts,tsx}' --fix",
@@ -42,6 +42,9 @@
 		"@types/recompose": "^0.30.7",
 		"@typescript-eslint/eslint-plugin": "^2.5.0",
 		"@typescript-eslint/parser": "^2.5.0",
+		"enzyme": "^3.10.0",
+		"enzyme-adapter-react-16": "^1.15.1",
+		"enzyme-to-json": "^3.4.3",
 		"eslint": "^6.5.1",
 		"eslint-config-prettier": "^6.4.0",
 		"eslint-config-react-app": "^5.0.2",
@@ -49,9 +52,17 @@
 		"eslint-plugin-prettier": "^3.1.1",
 		"eslint-plugin-react": "^7.16.0",
 		"eslint-plugin-react-hooks": "^2.2.0",
+		"jest-emotion": "^10.0.17",
 		"prettier": "^1.18.2",
 		"redux-devtools-extension": "^2.13.8",
+		"redux-mock-store": "^1.5.3",
 		"typescript": "^3.6.4"
+	},
+	"jest": {
+		"snapshotSerializers": [
+			"enzyme-to-json/serializer",
+			"jest-emotion"
+		]
 	},
 	"browserslist": {
 		"production": [

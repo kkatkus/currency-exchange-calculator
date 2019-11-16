@@ -9,7 +9,8 @@ const defaultState = {
   loading: true,
   activeIndex: 0,
   rates: {},
-  balances: { EUR: 50, GBP: 0, USD: 5 },
+  freeLimit: 5000,
+  balances: { EUR: 50000, GBP: 6000, USD: 500 },
   currency: ['EUR', 'GBP'],
   value: ['', ''],
 };

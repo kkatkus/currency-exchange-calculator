@@ -2,7 +2,6 @@
   font-family: 'Futura New';
   src: url('./assets/fonts/FuturaNewBook.woff2') format('woff2');
 }
-
 html,
 body,
 body,
@@ -15,21 +14,52 @@ body > div {
   -moz-osx-font-smoothing: grayscale;
   font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
-
+body {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: 'Roboto', sans-serif;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-
 * {
+  outline: none;
   box-sizing: border-box;
   font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
-
+a {
+  color: inherit;
+  text-decoration: none;
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+}
+img {
+  max-width: 100%;
+  position: relative;
+  vertical-align: middle;
+}
+figure {
+  margin: 2rem 0;
+}
+figcaption {
+  font-size: 80%;
+}
+table {
+  width: 100%;
+  font-size: 85%;
+  border-collapse: collapse;
+}
+td,
+th {
+  padding: 8px 6px;
+}
 input[readonly],
 input[readonly]:focus {
   background-color: rgb(243, 245, 247);
 }
-
 h1 {
   font-family: 'Futura New', Futura, Avenir, sans-serif;
   font-weight: 400;

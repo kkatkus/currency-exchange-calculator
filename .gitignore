@@ -3,6 +3,7 @@ node_modules
 *~
 *.pyc
 build/
+coverage/
 *.log*
 .idea
 .vscode

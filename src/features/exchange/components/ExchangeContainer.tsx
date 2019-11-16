@@ -5,15 +5,16 @@ import Exchange from './Exchange';
 import RootState from '../../../RootState';
 import { updateExchange, getExchangeRate } from '../exchange.actions';
 import useInterval from '../../../shared/hooks/useInterval';
-import { validateValueFormat, removeSign } from '../helper';
-import Loader from '../../../shared/components/Loader';
+import { validateValueFormat, removeSign, deductExchangeFee } from '../helper';
+import { EXCHANGE_RATE_PERIOD } from '../../../constants';
 
 const ExchangeContainer = () => {
-  const [error = '', loading, activeIndex, balances = {}, rates = {}, currency, value] = useSelector(
+  const [error = '', loading, activeIndex, freeLimit, balances = {}, rates = {}, currency, value] = useSelector(
     (state: RootState) => [
       state.exchange.error,
       state.exchange.loading,
       state.exchange.activeIndex,
+      state.exchange.freeLimit,
       state.exchange.balances,
       state.exchange.rates,
       state.exchange.currency,
@@ -23,13 +24,15 @@ const ExchangeContainer = () => {
 
   const dispatch = useDispatch();
 
+  // run instantly
   useEffect(() => {
     dispatch(getExchangeRate());
   }, [dispatch]);
 
+  // run periodically after EXCHANGE_RATE_PERIOD ms
   useInterval(() => {
     dispatch(getExchangeRate());
-  }, 10000);
+  }, EXCHANGE_RATE_PERIOD);
 
   const syncValue = (i: number, currency: [string, string], value: [string, string]) => {
     if (!value[i]) {
@@ -85,7 +88,8 @@ const ExchangeContainer = () => {
     const newCurrency = [currency[1], currency[0]] as [string, string];
     const newValue = [value[1], value[0]] as [string, string];
     dispatch(updateExchange({ currency: newCurrency, value: newValue }));
-    syncValue(activeIndex, newCurrency, newValue);
+    const io = activeIndex === 0 ? 1 : 0;
+    syncValue(io, newCurrency, newValue);
   };
 
   const handleExchange = (e: Event) => {
@@ -93,24 +97,24 @@ const ExchangeContainer = () => {
     const newBalances = { ...balances };
     newBalances[currency[0]] = newBalances[currency[0]] - parseFloat(value[0]);
     newBalances[currency[1]] = newBalances[currency[1]] + parseFloat(value[1]);
-    dispatch(updateExchange({ balances: newBalances, value: ['', ''] }));
+    const newFreeLimit = deductExchangeFee(rates, currency[0], value[0], freeLimit);
+    dispatch(updateExchange({ balances: newBalances, value: ['', ''], freeLimit: newFreeLimit }));
   };
 
   return (
-    <Loader loading={loading}>
-      <Exchange
-        balances={balances}
-        rates={rates}
-        currency={currency}
-        value={value}
-        loading={loading}
-        error={error}
-        handleExchange={handleExchange}
-        handleValueChange={handleValueChange}
-        handleCurrencyChange={handleCurrencyChange}
-        handleCurrencySwitch={handleCurrencySwitch}
-      />
-    </Loader>
+    <Exchange
+      balances={balances}
+      rates={rates}
+      freeLimit={freeLimit}
+      currency={currency}
+      value={value}
+      loading={loading}
+      error={error}
+      handleExchange={handleExchange}
+      handleValueChange={handleValueChange}
+      handleCurrencyChange={handleCurrencyChange}
+      handleCurrencySwitch={handleCurrencySwitch}
+    />
   );
 };
 

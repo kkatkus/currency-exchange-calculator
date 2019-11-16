@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 
-function isFunction(obj) {
+function isFunction(obj: any) {
   return !!(obj && obj.constructor && obj.call && obj.apply);
 }
 
-export default function useInterval(callback, delay) {
+export default function useInterval(callback, delay: number) {
   const savedCallback = useRef();
 
   // Remember the latest callback.

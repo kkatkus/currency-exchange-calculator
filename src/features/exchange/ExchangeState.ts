@@ -1,13 +1,13 @@
+import ExchangeRates from './ExchangeRates';
+import ExchangeBalances from './ExchangeBalances';
+
 export default interface ExchangeState {
   loading: boolean;
   error?: string;
   activeIndex: number;
-  balances: any;
-  rates?: {
-    [name: string]: {
-      [name: string]: number;
-    };
-  };
+  freeLimit: number;
+  balances: ExchangeBalances;
+  rates?: ExchangeRates;
   currency: [string, string];
   value: [string, string];
 }

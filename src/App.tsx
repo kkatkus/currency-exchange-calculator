@@ -7,16 +7,10 @@ import RootState from './RootState';
 import * as themes from './shared/styles';
 import Layout from './shared/components/Layout';
 
-import { Global } from '@emotion/core';
-
-import normalize from './shared/styles/normalize';
-import root from './shared/styles/root';
-
 const App = () => {
   const [theme] = useSelector((state: RootState) => [state.settings.theme]);
   return (
     <ThemeProvider theme={themes[theme]}>
-      <Global styles={[normalize, root]} />
       <Layout>
         <AppRoutes />
       </Layout>
