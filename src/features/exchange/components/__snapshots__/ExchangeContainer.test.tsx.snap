@@ -485,12 +485,12 @@ exports[`<ExchangeContainer /> matches snapshot 1`] = `
                             <Logo>
                               <Styled(span)
                                 data-testid="logo"
-                                title="Revolut"
+                                title="Logo"
                               >
                                 <span
                                   className="emotion-4"
                                   data-testid="logo"
-                                  title="Revolut"
+                                  title="Logo"
                                 >
                                   <Styled(svg)
                                     data-testid="logo-svg"

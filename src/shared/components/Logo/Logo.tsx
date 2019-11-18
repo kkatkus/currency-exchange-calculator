@@ -30,7 +30,7 @@ const Svg = styled('svg')`
 const Logo = () => {
   const [theme] = useSelector((state: RootState) => [state.settings.theme]);
   return (
-    <LogoStyled data-testid="logo" title="Revolut">
+    <LogoStyled data-testid="logo" title="Logo">
       <Svg
         width="120px"
         height="32px"

@@ -1,4 +1,4 @@
-# revolut-currency-exchange-calculator
+# Currency Exchange Calculator
 
 ## Install
 
