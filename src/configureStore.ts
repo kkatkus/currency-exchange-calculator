@@ -6,7 +6,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 
 import rootSaga from './rootSaga';
 import rootReducer from './rootReducer';
-import PreloadedState from './PreloadedState';
+import PreloadedState from './LocalStorageState';
 
 const sagaMiddleware = createSagaMiddleware();
 const composeEnhancers = composeWithDevTools({});

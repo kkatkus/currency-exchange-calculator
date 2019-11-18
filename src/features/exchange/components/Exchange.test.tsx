@@ -6,6 +6,9 @@ import configureStore from 'redux-mock-store';
 
 import Exchange from './Exchange';
 import * as themes from '../../../shared/styles';
+import { PocketType } from '../PocketType';
+
+import Big from 'big.js';
 
 const mockStore = configureStore([]);
 
@@ -15,14 +18,26 @@ describe('<Exchange />', () => {
   const defaultProps = {
     loading: false,
     error: undefined,
-    rates: { GBP: { EUR: 1.222, USD: 1.333 }, EUR: { USD: 1.111 } },
-    freeLimit: 3000,
-    balances: { EUR: 100, USD: 100 },
-    currency: ['EUR', 'USD'] as [string, string],
-    value: ['', ''] as [string, string],
+    rates: { GBP: { EUR: new Big(1.123), USD: new Big(1.234) }, EUR: { USD: new Big(1.111) } },
+    freeLimit: new Big(3000),
+    balances: { EUR: new Big(100), USD: new Big(100) },
+    pockets: {
+      from: {
+        currency: 'EUR',
+        symbol: '€',
+        amount: new Big(0),
+        input: '',
+      },
+      to: {
+        currency: 'USD',
+        symbol: '$',
+        amount: new Big(0),
+        input: '',
+      },
+    },
     handleExchange: () => {},
-    handleValueChange: i => e => {},
-    handleCurrencyChange: i => e => {},
+    handleValueChange: (i: PocketType) => (val: string) => {},
+    handleCurrencyChange: (i: PocketType) => (val: string) => {},
     handleCurrencySwitch: () => {},
   };
 
@@ -57,7 +72,7 @@ describe('<Exchange />', () => {
         </ThemeProvider>
       </Provider>,
     );
-    expect(wrapper.text()).toContain(props.error);
+    expect(wrapper.find('div#exchange-error')).toHaveLength(1);
   });
 
   it('should have exchange button disabled', () => {
@@ -74,7 +89,20 @@ describe('<Exchange />', () => {
   it('should have exchange button enabled', () => {
     const props = {
       ...defaultProps,
-      value: ['10', '10'] as [string, string],
+      pockets: {
+        from: {
+          currency: 'EUR',
+          symbol: '€',
+          amount: new Big(10),
+          input: '10',
+        },
+        to: {
+          currency: 'USD',
+          symbol: '$',
+          amount: new Big(10),
+          input: '10',
+        },
+      },
     };
     const wrapper = mount(
       <Provider store={store}>
@@ -89,7 +117,20 @@ describe('<Exchange />', () => {
   it('should have exchange button disabled because balance lower than exchange amount', () => {
     const props = {
       ...defaultProps,
-      value: ['101', '10'] as [string, string],
+      pockets: {
+        from: {
+          currency: 'EUR',
+          symbol: '€',
+          amount: new Big(101),
+          input: '101',
+        },
+        to: {
+          currency: 'USD',
+          symbol: '$',
+          amount: new Big(10),
+          input: '10',
+        },
+      },
     };
     const wrapper = mount(
       <Provider store={store}>
@@ -106,7 +147,20 @@ describe('<Exchange />', () => {
 
     const props = {
       ...defaultProps,
-      value: ['101', '10'] as [string, string],
+      pockets: {
+        from: {
+          currency: 'EUR',
+          symbol: '€',
+          amount: new Big(101),
+          input: '101',
+        },
+        to: {
+          currency: 'USD',
+          symbol: '$',
+          amount: new Big(10),
+          input: '10',
+        },
+      },
       handleExchange,
     };
     const wrapper = mount(
@@ -116,7 +170,7 @@ describe('<Exchange />', () => {
         </ThemeProvider>
       </Provider>,
     );
-    wrapper.find('button').simulate('click');
+    wrapper.find('button#exchange-submit').simulate('click');
     expect(handleExchange).not.toBeCalled();
   });
 
@@ -125,7 +179,20 @@ describe('<Exchange />', () => {
 
     const props = {
       ...defaultProps,
-      value: ['10', '10'] as [string, string],
+      pockets: {
+        from: {
+          currency: 'EUR',
+          symbol: '€',
+          amount: new Big(10),
+          input: '10',
+        },
+        to: {
+          currency: 'USD',
+          symbol: '$',
+          amount: new Big(10),
+          input: '10',
+        },
+      },
       handleExchange,
     };
     const wrapper = mount(
@@ -135,7 +202,7 @@ describe('<Exchange />', () => {
         </ThemeProvider>
       </Provider>,
     );
-    wrapper.find('button').simulate('click');
+    wrapper.find('button#exchange-submit').simulate('click');
     expect(handleExchange).toBeCalled();
   });
 });

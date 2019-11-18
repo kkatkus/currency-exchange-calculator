@@ -1,13 +1,15 @@
-import ExchangeRates from './ExchangeRates';
-import ExchangeBalances from './ExchangeBalances';
+import Rates from './Rates';
+import Big from 'big.js';
+import { PocketType } from './PocketType';
+import Pockets from './Pockets';
+import Balances from './Balances';
 
 export default interface ExchangeState {
   loading: boolean;
   error?: string;
-  activeIndex: number;
-  freeLimit: number;
-  balances: ExchangeBalances;
-  rates?: ExchangeRates;
-  currency: [string, string];
-  value: [string, string];
+  freeLimit: Big;
+  rates: Rates;
+  balances: Balances;
+  activePocket: PocketType;
+  pockets: Pockets;
 }

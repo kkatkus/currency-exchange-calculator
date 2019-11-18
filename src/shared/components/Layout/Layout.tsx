@@ -9,7 +9,7 @@ interface Props {
 
 const Wrapper = styled('div')`
   min-height: 100vh;
-  background-color: ${(props: any) => props.theme.colors.background};
+  background-color: ${(props: any) => (props.theme ? props.theme.colors.background : '')};
   color: ${(props: any) => props.theme.colors.onBackground};
 `;
 

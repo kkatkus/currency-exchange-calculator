@@ -1,5 +1,4 @@
 export const EXCHANGE_UPDATE = `/exchange/UPDATE`;
-export const EXCHANGE_RATE_FETCH_INIT = `/exchange/rate/FETCH_INIT`;
 export const EXCHANGE_RATE_FETCH_SUCCESS = `/exchange/rate/FETCH_SUCCESS`;
 export const EXCHANGE_RATE_FETCH_FAIL = `/exchange/rate/FETCH_FAIL`;
 

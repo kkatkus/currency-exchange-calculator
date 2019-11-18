@@ -1,33 +1,36 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { lighten, transparentize } from 'polished';
+import { transparentize } from 'polished';
 
 import Loader from '../../../shared/components/Loader';
 import Button from '../../../shared/components/Button';
 import CenteredBox from '../../../shared/components/CenteredBox';
-import ExchangeInputBlock from './ExchangeInputBlock';
-import { canExchange } from '../helper';
+import SwitchedButton from '../../../shared/components/SwitchButton';
 import Logo from '../../../shared/components/Logo';
-import CurrencyRate from './CurrencyRate';
-import ExchangeRates from '../ExchangeRates';
-import ExchangeBalances from '../ExchangeBalances';
+import { canExchange } from '../helper';
+
+import Rates from '../Rates';
+import Balances from '../Balances';
+import { PocketType } from '../PocketType';
+import Big from 'big.js';
+import Pockets from '../Pockets';
+import Pocket from './Pocket';
+import Rate from './Rate';
 
 interface Props {
-  balances: ExchangeBalances;
-  rates: ExchangeRates;
-  freeLimit: number;
-  currency: [string, string];
-  value: [string, string];
   loading: boolean;
   error?: string;
+  rates: Rates;
+  freeLimit: Big;
+  balances: Balances;
+  pockets: Pockets;
   handleExchange: (e: any) => void;
-  handleValueChange: (i: number) => (e: Event) => void;
-  handleCurrencyChange: (i: number) => (e: Event) => void;
+  handleValueChange: (pt: PocketType) => (val: string) => void;
+  handleCurrencyChange: (pt: PocketType) => (val: string) => void;
   handleCurrencySwitch: () => void;
 }
 
 const Wrapper = styled('div')`
-  padding: 20px;
   max-width: 420px;
   min-width: 220px;
   width: 400px;
@@ -42,7 +45,8 @@ const Wrapper = styled('div')`
 const Title = styled('h1')`
   width: 100%;
   text-align: center;
-  margin-bottom: 2em;
+  margin-top: 1em;
+  margin-bottom: 1em;
 
   span {
     letter-spacing: 1.2px;
@@ -61,25 +65,14 @@ const Error = styled('div')`
   color: ${(props: any) => props.theme.colors.onError};
 `;
 
-const SwitchCurrencies = styled('div')`
-  position: absolute;
-  display: block;
-  top: -12px;
-  width: 24px;
-  height: 24px;
-  border: 2px solid ${(props: any) => lighten(0.3, props.theme.colors.input)};
-  background-color: ${(props: any) => lighten(0.4, props.theme.colors.background)};
-  border-radius: 50%;
-  cursor: pointer;
-`;
-
-const DarkenBlock = styled('div')`
+interface PanelProps {
+  even?: boolean;
+}
+const Panel = styled('div')<PanelProps>`
   position: relative;
-  margin: -20px;
+  display: block;
   padding: 20px;
-  background-color: ${(props: any) => transparentize(0.9, props.theme.colors.input)};
-  border-bottom-left-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
+  background-color: ${(props: any) => (props.even ? transparentize(0.95, props.theme.colors.input) : '')};
 `;
 
 const Exchange = ({
@@ -88,8 +81,7 @@ const Exchange = ({
   rates,
   freeLimit,
   balances,
-  currency,
-  value,
+  pockets,
   handleExchange,
   handleValueChange,
   handleCurrencyChange,
@@ -101,39 +93,41 @@ const Exchange = ({
         <Title>
           <Logo />
         </Title>
-        {error && <Error>{error}</Error>}
+        {error && <Error id="exchange-error">{error}</Error>}
         <form onSubmit={handleExchange} method="post">
-          <ExchangeInputBlock
-            rates={rates}
-            freeLimit={freeLimit}
-            balance={balances[currency[0]]}
-            currency={currency[0]}
-            value={value[0]}
-            canBalanceExceed
-            handleValueChange={handleValueChange(0)}
-            handleCurrencyChange={handleCurrencyChange(0)}
-          />
-          <DarkenBlock>
-            <SwitchCurrencies onClick={handleCurrencySwitch} />
-            <CurrencyRate rates={rates} currency={currency} />
-            <ExchangeInputBlock
+          <Panel>
+            <Pocket
               rates={rates}
               freeLimit={freeLimit}
-              balance={balances[currency[1]]}
-              currency={currency[1]}
-              value={value[1]}
-              handleValueChange={handleValueChange(1)}
-              handleCurrencyChange={handleCurrencyChange(1)}
+              balance={balances[pockets[PocketType.From].currency]}
+              pocket={pockets[PocketType.From]}
+              pocketType={PocketType.From}
+              handleValueChange={handleValueChange(PocketType.From)}
+              handleCurrencyChange={handleCurrencyChange(PocketType.From)}
+            />
+          </Panel>
+          <Panel even>
+            <SwitchedButton handleClick={handleCurrencySwitch} />
+            <Rate rates={rates} pockets={pockets} />
+            <Pocket
+              rates={rates}
+              freeLimit={freeLimit}
+              balance={balances[pockets[PocketType.To].currency]}
+              pocketType={PocketType.To}
+              pocket={pockets[PocketType.To]}
+              handleValueChange={handleValueChange(PocketType.To)}
+              handleCurrencyChange={handleCurrencyChange(PocketType.To)}
             />
             <Button
-              disabled={!canExchange(balances, currency, value)}
+              id="exchange-submit"
+              disabled={!canExchange(balances, pockets)}
               onClick={handleExchange}
               type="submit"
               style={{ width: '100%' }}
             >
               Exchange
             </Button>
-          </DarkenBlock>
+          </Panel>
         </form>
       </Loader>
     </Wrapper>

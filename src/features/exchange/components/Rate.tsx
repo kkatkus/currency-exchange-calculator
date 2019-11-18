@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { lighten } from 'polished';
-import { getCurrencySymbol } from '../helper';
-import ExchangeRates from '../ExchangeRates';
+import Rates from '../Rates';
+import Pockets from '../Pockets';
+import { PocketType } from '../PocketType';
 
 interface Props {
-  rates: ExchangeRates;
-  currency: [string, string];
+  rates: Rates;
+  pockets: Pockets;
 }
 
 const Wrapper = styled('div')`
@@ -27,17 +28,24 @@ const Wrapper = styled('div')`
   background-color: ${(props: any) => lighten(0.8, props.theme.colors.background)};
 `;
 
-const CurrencyRate = ({ rates, currency }: Props) => {
-  const rate = rates[currency[0]] ? rates[currency[0]][currency[1]] : 'n/a';
-  const fromSymbol = getCurrencySymbol(currency[0]);
-  const toSymbol = getCurrencySymbol(currency[1]);
+const Rate = ({ rates, pockets }: Props) => {
+  const fromRates = rates[pockets[PocketType.From].currency];
+
+  if (!fromRates) {
+    return null;
+  }
+
+  const rate = fromRates[pockets[PocketType.To].currency];
+  if (!rate) {
+    return null;
+  }
 
   return (
     <Wrapper>
-      {fromSymbol}1 = {toSymbol}
-      {rate}
+      {pockets[PocketType.From].symbol}1 = {pockets[PocketType.To].symbol}
+      {rate.toFixed(4)}
     </Wrapper>
   );
 };
 
-export default CurrencyRate;
+export default Rate;

@@ -1,105 +1,106 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Exchange from './Exchange';
 import RootState from '../../../RootState';
-import { updateExchange, getExchangeRate } from '../exchange.actions';
-import useInterval from '../../../shared/hooks/useInterval';
-import { validateValueFormat, removeSign, deductExchangeFee } from '../helper';
-import { EXCHANGE_RATE_PERIOD } from '../../../constants';
+import { updateExchange } from '../exchange.actions';
+import {
+  validateValueFormat,
+  deductExchangeFee,
+  deductBalances,
+  exchangeInPockets,
+  getCurrencySymbol,
+} from '../helper';
+import { PocketType } from '../PocketType';
+import Pockets from '../Pockets';
+
+import Big from 'big.js';
 
 const ExchangeContainer = () => {
-  const [error = '', loading, activeIndex, freeLimit, balances = {}, rates = {}, currency, value] = useSelector(
-    (state: RootState) => [
-      state.exchange.error,
-      state.exchange.loading,
-      state.exchange.activeIndex,
-      state.exchange.freeLimit,
-      state.exchange.balances,
-      state.exchange.rates,
-      state.exchange.currency,
-      state.exchange.value,
-    ],
-  );
+  const [error, loading, freeLimit, balances, rates, activePocket, pockets] = useSelector((state: RootState) => [
+    state.exchange.error,
+    state.exchange.loading,
+    state.exchange.freeLimit,
+    state.exchange.balances,
+    state.exchange.rates,
+    state.exchange.activePocket,
+    state.exchange.pockets,
+  ]);
 
   const dispatch = useDispatch();
 
-  // run instantly
-  useEffect(() => {
-    dispatch(getExchangeRate());
-  }, [dispatch]);
-
-  // run periodically after EXCHANGE_RATE_PERIOD ms
-  useInterval(() => {
-    dispatch(getExchangeRate());
-  }, EXCHANGE_RATE_PERIOD);
-
-  const syncValue = (i: number, currency: [string, string], value: [string, string]) => {
-    if (!value[i]) {
-      return;
-    }
-
-    const oi = i === 0 ? 1 : 0;
-    const rate = rates[currency[i]][currency[oi]];
-    const val = parseFloat(value[i]);
-
-    // no free food
-    const operation = i === 1 ? 'ceil' : 'floor';
-    value[oi] = (Math[operation](rate * val * 100) / 100).toFixed(2);
-    dispatch(updateExchange({ value, activeIndex: i }));
+  const syncValue = (pt: PocketType, pockets: Pockets) => {
+    dispatch(updateExchange({ pockets: exchangeInPockets(pt, rates, pockets), activePocket: pt }));
   };
 
-  const handleValueChange = (i: number) => e => {
-    const val = removeSign(e.target.value).replace(',', '.');
+  const handleValueChange = (pt: PocketType) => (val: string) => {
+    const newPockets = {
+      [PocketType.From]: {
+        ...pockets[PocketType.From],
+        input: '',
+        amount: new Big(0),
+      },
+      [PocketType.To]: {
+        ...pockets[PocketType.To],
+        input: '',
+        amount: new Big(0),
+      },
+    };
 
     if (val === '') {
-      dispatch(updateExchange({ value: ['', ''] }));
+      dispatch(updateExchange({ pockets: newPockets }));
       return;
     }
 
-    let newValue = [...value] as [string, string];
-    newValue[i] = val;
+    newPockets[pt].input = val[0] === '.' ? `0${val}` : val;
 
-    if (val[0] === '.') {
-      newValue = ['', ''];
-      newValue[i] = `0${val}`;
-    }
-
-    if (!validateValueFormat(newValue[i])) {
+    if (!validateValueFormat(newPockets[pt].input)) {
       return;
     }
 
-    syncValue(i, currency, newValue);
+    syncValue(pt, newPockets);
   };
 
-  const handleCurrencyChange = (i: number) => e => {
-    const oi = i === 0 ? 1 : 0;
-    const newCurrency = [...currency] as [string, string];
+  const handleCurrencyChange = (pt: PocketType) => currency => {
+    const opt = pt === PocketType.From ? PocketType.To : PocketType.From;
+    const newPockets = { ...pockets };
 
-    if (e.target.value === newCurrency[oi]) {
-      newCurrency[oi] = newCurrency[i];
+    // switch currencies if same selected
+    if (currency === newPockets[opt].currency) {
+      newPockets[opt].currency = newPockets[pt].currency;
+      newPockets[opt].symbol = newPockets[pt].symbol;
     }
-    newCurrency[i] = e.target.value;
-    dispatch(updateExchange({ currency: newCurrency }));
-
-    syncValue(0, newCurrency, value);
+    newPockets[pt].currency = currency;
+    newPockets[pt].symbol = getCurrencySymbol(currency);
+    syncValue(activePocket, newPockets);
   };
 
   const handleCurrencySwitch = () => {
-    const newCurrency = [currency[1], currency[0]] as [string, string];
-    const newValue = [value[1], value[0]] as [string, string];
-    dispatch(updateExchange({ currency: newCurrency, value: newValue }));
-    const io = activeIndex === 0 ? 1 : 0;
-    syncValue(io, newCurrency, newValue);
+    const newPockets = {
+      [PocketType.From]: { ...pockets[PocketType.To] },
+      [PocketType.To]: { ...pockets[PocketType.From] },
+    };
+    const opt = activePocket === PocketType.From ? PocketType.To : PocketType.From;
+    syncValue(opt, newPockets);
   };
 
   const handleExchange = (e: Event) => {
     e.preventDefault();
-    const newBalances = { ...balances };
-    newBalances[currency[0]] = newBalances[currency[0]] - parseFloat(value[0]);
-    newBalances[currency[1]] = newBalances[currency[1]] + parseFloat(value[1]);
-    const newFreeLimit = deductExchangeFee(rates, currency[0], value[0], freeLimit);
-    dispatch(updateExchange({ balances: newBalances, value: ['', ''], freeLimit: newFreeLimit }));
+    const newBalances = deductBalances(balances, pockets);
+    const newFreeLimit = deductExchangeFee(rates, freeLimit, pockets[PocketType.From]);
+    const newPockets = {
+      [PocketType.From]: {
+        ...pockets[PocketType.From],
+        input: '',
+        amount: new Big(0),
+      },
+      [PocketType.To]: {
+        ...pockets[PocketType.To],
+        input: '',
+        amount: new Big(0),
+      },
+    };
+    dispatch(updateExchange({ balances: newBalances, pockets: newPockets, freeLimit: newFreeLimit }));
   };
 
   return (
@@ -107,8 +108,7 @@ const ExchangeContainer = () => {
       balances={balances}
       rates={rates}
       freeLimit={freeLimit}
-      currency={currency}
-      value={value}
+      pockets={pockets}
       loading={loading}
       error={error}
       handleExchange={handleExchange}

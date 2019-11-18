@@ -1,36 +1,25 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { fork, put, delay } from 'redux-saga/effects';
+
 import axios from 'axios';
 
-import { EXCHANGE_RATE_FETCH_INIT, EXCHANGE_RATE_FETCH_SUCCESS, EXCHANGE_RATE_FETCH_FAIL } from '../../actions';
-import ExchangeRates from './ExchangeRates';
+import { EXCHANGE_RATE_FETCH_SUCCESS, EXCHANGE_RATE_FETCH_FAIL } from '../../actions';
+import Rates from './Rates';
+import { mapRates } from './helper';
 
-function* getExchangeRate() {
-  try {
-    const response = yield axios.get(`https://api.exchangeratesapi.io/latest?base=EUR`);
-    const rates: ExchangeRates = {
-      EUR: {
-        USD: response.data.rates.USD,
-        GBP: response.data.rates.GBP,
-      },
-      GBP: {
-        EUR: Math.round((1 / response.data.rates.GBP) * 1000000) / 1000000,
-        USD: Math.round((response.data.rates.USD / response.data.rates.GBP) * 1000000) / 1000000,
-      },
-      USD: {
-        EUR: Math.round((1 / response.data.rates.USD) * 1000000) / 1000000,
-        GBP: Math.round((response.data.rates.GBP / response.data.rates.USD) * 1000000) / 1000000,
-      },
-    };
-    yield put({ type: EXCHANGE_RATE_FETCH_SUCCESS, payload: rates });
-  } catch (e) {
-    const payload =
-      e.response && e.response.data && e.response.data.message
-        ? e.response.data.message
-        : e.message || 'Failed to fetch rates';
-    yield put({ type: EXCHANGE_RATE_FETCH_FAIL, payload });
+function* getRates() {
+  while (true) {
+    try {
+      const response = yield axios.get(`https://api.Ratesapi.io/latest?base=EUR`);
+      const rates: Rates = mapRates(response.data.rates);
+      yield put({ type: EXCHANGE_RATE_FETCH_SUCCESS, payload: rates });
+    } catch (e) {
+      yield put({ type: EXCHANGE_RATE_FETCH_FAIL, payload: 'Failed to fetch exchange rates' });
+    }
+
+    yield delay(10 * 1000);
   }
 }
 
 export function* exchangeSagas() {
-  yield takeLatest(EXCHANGE_RATE_FETCH_INIT, getExchangeRate);
+  yield fork(getRates);
 }

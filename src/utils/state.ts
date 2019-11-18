@@ -11,5 +11,5 @@ export const getState = () => {
 };
 
 export const saveState = (state: object): void => {
-  setItem('state', state);
+  setItem(STATE_KEY_NAME, state);
 };
