@@ -6,7 +6,6 @@ import Loader from '../../../shared/components/Loader';
 import Button from '../../../shared/components/Button';
 import CenteredBox from '../../../shared/components/CenteredBox';
 import SwitchedButton from '../../../shared/components/SwitchButton';
-import Logo from '../../../shared/components/Logo';
 import { canExchange } from '../helper';
 
 import Rates from '../Rates';
@@ -45,15 +44,10 @@ const Wrapper = styled('div')`
 const Title = styled('h1')`
   width: 100%;
   text-align: center;
-  margin-top: 1em;
-  margin-bottom: 1em;
-
-  span {
-    letter-spacing: 1.2px;
-    font-size: 24px;
-    font-weight: 600;
-    padding-left: 20px;
-  }
+  letter-spacing: 1.2px;
+  font-weight: 600;
+  font-size: 32px;
+  padding: 1.6em 0.2em;
 `;
 
 const Error = styled('div')`
@@ -90,9 +84,7 @@ const Exchange = ({
   <CenteredBox>
     <Wrapper>
       <Loader loading={loading}>
-        <Title>
-          <Logo />
-        </Title>
+        <Title>Currenct Exchange Calculator</Title>
         {error && <Error id="exchange-error">{error}</Error>}
         <form onSubmit={handleExchange} method="post">
           <Panel>
